@@ -8,27 +8,19 @@ import addDays from 'date-fns/addDays';
 import axios from 'axios';
 import format from 'date-fns/format';
 import Result from './Result';
-import Loading from './Loading';
 
 const Today = new Date();
 registerLocale('ja', ja);
 
 class Home extends React.Component {
- state = { date: addDays(new Date(), 14), budget: '12000', departure: '1', duration: '90', planCount: 0, plans: null, error: false, loading: false }
+  state = { date: addDays(new Date(), 14), budget: '12000', departure: '1', duration: '90' }
 
   onFormSubmit = async (event) => {
-    try {
-      event.preventDefault();
-    this.setState({ loading: true });
-
-      const response = await axios.get('https://ibchffdf20.execute-api.ap-northeast-1.amazonaws.com/production', {
-        params: { date: format(this.state.date, 'yyyyMMdd'), budget: this.state.budget, departure: this.state.departure, duration: this.state.duration }
-      });
-      this.setState({ planCount: response.data.count, plans: response.data.plans })
-    this.setState({ loading: false });
-    } catch (error) {
-      this.setState({ error: error })
-    }
+    event.preventDefault();
+    const response = await axios.get('https://ibchffdf20.execute-api.ap-northeast-1.amazonaws.com/production', {
+      params: { date: format(this.state.date, 'yyyyMMdd'), budget: this.state.budget, departure: this.state.departure, duration: this.state.duration }
+    });
+    this.setState({ planCount: response.data.count, plans: response.data.plans })
   }
 
   render() {
@@ -76,14 +68,9 @@ class Home extends React.Component {
               </button>
             </div>
           </form>
-
-        <Loading loading={this.state.loading}/>
-
-          <Result
-            plans={this.state.plans}
-            planCount={this.state.planCount}
-            error={this.state.error}
-          />
+        <Result
+          plans={this.state.plans}
+        />
         </div>
       </div>
     );
